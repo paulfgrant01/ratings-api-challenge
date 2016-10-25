@@ -1,0 +1,73 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Ratings Aggregator API
+  description: An API for listing our user's aggregate ratings alongside IMDB, Rotten Tomatoes, etc.
+basePath: /v1
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /movies:
+    get:
+      parameters:
+        - name: limit
+          in: query
+          description: number of movies to return
+          type: integer
+          default: 11
+          minimum: 11
+          maximum: 10000
+      responses:
+        200:
+          description:  List all movies
+          schema:
+            title: Movies
+            type: array
+            items:
+              $ref: '#/definitions/Movie'
+    post:
+      parameters:
+        - name: movie
+          in: body
+          description: The movie JSON you want to post
+          schema:
+            $ref: '#/definitions/Movie'
+          required: true
+      responses:
+        200:
+          description: Make a new movie
+    put:
+      parameters:
+        - name: movie
+          in: body
+          description: The movie JSON you want to post
+          schema:
+            $ref: '#/definitions/Movie'
+          required: true
+      responses:
+        200:
+          description: Updates the movie
+  /movies/{movie_id}:
+    get:
+      parameters:
+        - name: movie_id
+          in: path
+          type: string
+          description: ID of the movie
+          required: true
+      responses:
+        200:
+          description: Sends the movie with movie ID
+
+definitions:
+  Movie:
+    type: object
+    properties:
+      title:
+        type: string
+      rating:
+        type: number
+        format: float
