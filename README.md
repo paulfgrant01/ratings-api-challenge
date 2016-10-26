@@ -4,17 +4,19 @@ Thanks for taking the time to take our challenge. We're hoping that you can foll
 
 ## Goals
 
-We're hoping to learn a bit more about your personal dev style and preferences, so feel free to choose the language, libraries, and any other weapons of choice. As a backend engineer in our organization, we find ourselves relying on a lot of PaaS (platforms as a service), which means a lot of integration with 3rd party APIs. In the spirit of working with a 3rd party API, this challenge focuses on building an API which acts as a Consumer of another API ([The Open Movie Database](https://www.omdbapi.com/)), and a Provider to a number of client-side apps.
+We're hoping to learn a bit more about your personal dev style and preferences, so feel free to choose the language, libraries, and any other weapons of choice. As a Backend Engineer in our organization, we find ourselves relying on a lot of PaaS (platforms as a service), which means a lot of integration with 3rd party APIs. In the spirit of working with a 3rd party API, this challenge focuses on building an API which acts as a Consumer of another API ([The Open Movie Database](https://www.omdbapi.com/)), and a Provider to a number of client-side apps.
 
-The other half of the challenge (aside from getting it to work on your laptop!) is to provide human-readable deployment instructions or, as a bonus, actually deploy to a internet-accessible, public-facing endpoint.
+The other half of the challenge (aside from getting it to work on your laptop!) is to provide human-readable deployment instructions or, as a bonus, actually deploy to a internet-accessible, public-facing endpoint. We have a strong DevOps-centric organization, where Engineers are empowered to take ownership of their services all the way into Production.
 
 This repo provides an initial starting point, so please fork and commit your work to your fork. Wherever you take it, or whether or not you use the files in this repo at all, is completely up to you.
 
 ## Instructions
 
-Our users, much like the movie-watching public at large, are often faced with the question of: what should I watch next? While our services currently offer a curated selection of films and a number of ways you can look for stuff you haven't seen yet, let's look at the problem within the context of an imaginary service, that may or may not exist in the future, _TooManyFlix_, which offers a dizzying array of films. Users are allowed to post reviews and star ratings (1 to 5) already, but we want to be able to list them alongside other aggregate ratings from services like IMDb and Rotten Tomatoes.
+Our users, much like the movie-watching public at large, are often faced with the question: what should I watch next? While our services currently offer a curated selection of films and a number of ways you can look for stuff you haven't seen yet, let's look at the problem within the context of an imaginary service, that may or may not exist in the future...
 
-We would like you to build an API that allows consumers to register a new movie `title`, with an associated combined user `rating`. When we subsequently request information about the same movie, we would like the API to return a `metascore` (Metacritic rating) and `imdbRating` for the movie.
+_TooManyFlix_ is a streaming video subscription service that offers a dizzying array of films. _TooManyFlix_ users are already allowed to post movie reviews and star ratings (1 to 5), but we want to be able to list them alongside other aggregate ratings from services like IMDb and Rotten Tomatoes.
+
+We would like you to build an API that allows Consumers to register a new movie `title`, with an associated combined user `rating`. When Consumers subsequently request information about the same movie, in addition to the values provided at registration time, we would like the API to return a `metascore` (Metacritic rating) and `imdbRating` for the movie, if available.
 
 #### A RESTful API
 
@@ -29,9 +31,9 @@ As a consumer of this API, I should be able to:
 
 #### Integrating with a 3rd party
 
-At this point, you have the RESTful endpoints above in a working state.
+At this point, you should have the RESTful endpoints above in a working state.
 
-As a consumer of this API, I would now like the movie details call to return aggregate ratings. These ratings will be provided by the Open Movie Database, which can be found here: https://www.omdbapi.com/
+As a consumer of this API, I would now like the movie details call (HTTP GET /movies/123) to return 3rd party ratings. These ratings will be provided by the Open Movie Database, which can be found here: https://www.omdbapi.com/
 
 For example, if `HTTP GET /movies/1` returned info about the movie "Donnie Darko", based on http://www.omdbapi.com/?t=donnie+darko&y=&plot=short&r=json, we would expect the response to look something like:
 
