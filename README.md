@@ -22,7 +22,7 @@ As a consumer of this API, I should be able to:
 
 1. List all movies registered in the system (HTTP GET /movies)
 2. Register a new movie (HTTP POST /movies), with a Title and Rating (combined user rating)
-3. Update an existing movie registed in the system (HTTP PUT /movies)
+3. Update an existing movie registered in the system (HTTP PUT /movies)
 4. Get details for a single movie registered in the system (HTTP GET /movies/123)
 
 `swagger.yaml` sets forth the basic JSON contract that we would like the API to adhere to. If you've never used Swagger or the [Open API Spec](https://openapis.org/specification) before, go to http://editor.swagger.io/, paste in the contents of `swagger.yaml`, and it will generate some easy-to-follow documentation on the right-hand side
