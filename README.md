@@ -4,17 +4,17 @@ Thanks for taking the time to take our challenge. We're hoping that you can foll
 
 ## Goals
 
-We're hoping to learn a bit more about your personal dev style and preferences, so feel free to choose the language, libraries, and any other weapons of choice. As a Backend Engineer in our organization, we find ourselves relying on a lot of PaaS (platforms as a service), which means a lot of integration with 3rd party APIs. In the spirit of working with a 3rd party API, this challenge focuses on building an API which acts as a Consumer of another API ([The Open Movie Database](https://www.omdbapi.com/)), and a Provider to a number of client-side apps.
+We're hoping to learn a bit more about your personal dev style and preferences, so feel free to choose the language, libraries, and any other weapons of choice. As a Backend Engineer in our organization, we find ourselves relying on a lot of PaaS (Platforms as a Service), which means a lot of integration with 3rd party APIs. In the spirit of working with a 3rd party API, this challenge focuses on building an API which acts as a Consumer of another API ([The Open Movie Database](https://www.omdbapi.com/)), and a Provider to a number of client-side apps.
 
-The other half of the challenge (aside from getting it to work on your laptop!) is to provide human-readable deployment instructions or, as a bonus, actually deploy to a internet-accessible, public-facing endpoint. We have a strong DevOps-centric organization, where Engineers are empowered to take ownership of their services all the way into Production.
+The other half of the challenge (aside from getting it to work on your laptop!) is to provide human-readable deployment instructions or, as a bonus, actually deploy to a internet-accessible, public-facing endpoint. We have a strong DevOps-centric organization, where Engineers are empowered to take ownership of their services all the way into Production, so it's helpful for us to see how you communicate deployment-related information.
 
-This repo provides an initial starting point, so please fork and commit your work to your fork. Wherever you take it, or whether or not you use the files in this repo at all, is completely up to you.
+This repo provides an initial starting point, so please fork and commit your work to your fork. Where you go from here, or whether or not you use the file(s) in this repo at all, is completely up to you.
 
 ## Instructions
 
 Our users, much like the movie-watching public at large, are often faced with the question: what should I watch next? While our services currently offer a curated selection of films and a number of ways you can look for stuff you haven't seen yet, let's look at the problem within the context of an imaginary service, that may or may not exist in the future...
 
-_TooManyFlix_ is a streaming video subscription service that offers a dizzying array of films. _TooManyFlix_ users are already allowed to post movie reviews and star ratings (1 to 5), but we want to be able to list them alongside other aggregate ratings from services like IMDb and Rotten Tomatoes.
+_TooManyFlix_ is a streaming video subscription service that offers a dizzying variety of films. _TooManyFlix_ users are already allowed to post movie reviews and star ratings (1 to 5), but we want to be able to list them alongside other aggregate ratings from services like IMDb and Rotten Tomatoes.
 
 We would like you to build an API that allows Consumers to register a new movie `title`, with an associated combined user `rating`. When Consumers subsequently request information about the same movie, in addition to the values provided at registration time, we would like the API to return a `metascore` (Metacritic rating) and `imdbRating` for the movie, if available.
 
@@ -27,7 +27,7 @@ As a consumer of this API, I should be able to:
 3. Update an existing movie registered in the system (HTTP PUT /movies)
 4. Get details for a single movie registered in the system (HTTP GET /movies/123)
 
-`swagger.yaml` sets forth the basic JSON contract that we would like the API to adhere to. If you've never used Swagger or the [Open API Spec](https://openapis.org/specification) before, go to http://editor.swagger.io/, paste in the contents of `swagger.yaml`, and it will generate some easy-to-follow documentation on the right-hand side
+[`swagger.yaml`](./swagger.yaml) sets forth the basic JSON contract that we would like the API to adhere to. If you've never used Swagger or the [Open API Spec](https://openapis.org/specification) before, go to http://editor.swagger.io/, paste in the contents of `swagger.yaml`, and it will generate some easy-to-follow documentation on the right-hand side.
 
 #### Integrating with a 3rd party
 
