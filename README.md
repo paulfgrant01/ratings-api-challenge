@@ -1,56 +1,106 @@
 # Ratings Aggregator API
+***
+### Synopsis
+---
+This project is a basic movie ratings application. Rest endpoints have been created to get/add/update movie ratings.
 
-Thanks for taking the time to take our challenge. We're hoping that you can follow a few guidelines and deliver a simple, working API that conforms to the interface set forth below.
+### Installation
+---
+In order to run this application you will need the following installed:
 
-## Goals
+python3 and libraries:
 
-We're hoping to learn a bit more about your personal dev style and preferences, so feel free to choose the language, libraries, and any other weapons of choice. As a Backend Engineer in our organization, we find ourselves relying on a lot of PaaS (Platforms as a Service), which means a lot of integration with 3rd party APIs. In the spirit of working with a 3rd party API, this challenge focuses on building an API which acts as a Consumer of another API ([The Open Movie Database](https://www.omdbapi.com/)), and a Provider to a number of client-side apps.
 
-The other half of the challenge (aside from getting it to work on your laptop!) is to provide human-readable deployment instructions or, as a bonus, actually deploy to a internet-accessible, public-facing endpoint. We have a strong DevOps-centric organization, where Engineers are empowered to take ownership of their services all the way into Production, so it's helpful for us to see how you communicate deployment-related information.
+> requests
+> json
+> flask
+> sqlalchemy
+> jsonschema
 
-This repo provides an initial starting point, so please fork and commit your work to your fork. Where you go from here, or whether or not you use the file(s) in this repo at all, is completely up to you.
 
-## Instructions
+### Steps to install:                
+```sh
+$ git clone https://github.com/paulfgrant01/ratings-api-challenge.git
+$ export PYTHONPATH=$PYTHONPATH:YOUR_DIRECTORY/ratings-api-challenge
+$ cd ratings-api-challenge
+$ export APPLICATION_DIRECTORY=`pwd`
+$ cd app/db
+$ python3 test_create_db.py
+$ cd ../app
+$ python3 run.py
+```
+### AWS Setup
+To run agains AWS hosted app update your config file: 
+```sh
+$APPLICATION_DIRECTORY/ratings-api-challenge/app/configy.py:
+```
+And set the following values:
+- FLASK_APP_PORT=10702
+- FLASK_APP_HOST=54.209.200.143
 
-Our users, much like the movie-watching public at large, are often faced with the question: what should I watch next? While our services currently offer a curated selection of films and a number of ways you can look for stuff you haven't seen yet, let's look at the problem within the context of an imaginary service, that may or may not exist in the future...
 
-_TooManyFlix_ is a streaming video subscription service that offers a dizzying variety of films. _TooManyFlix_ users are already allowed to post movie reviews and star ratings (1 to 5), but we want to be able to list them alongside other aggregate ratings from services like IMDb and Rotten Tomatoes.
-
-We would like you to build an API that allows Consumers to register a new movie `title`, with an associated combined user `rating`. When Consumers subsequently request information about the same movie, in addition to the values provided at registration time, we would like the API to return a `metascore` (Metacritic rating) and `imdbRating` for the movie, if available.
-
-#### A RESTful API
-
-As a consumer of this API, I should be able to:
-
+# RESTful API Reference
+Below are the API's provided by this application:
 1. List all movies registered in the system (HTTP GET /movies)
 2. Register a new movie (HTTP POST /movies), with a Title and Rating (combined user rating)
 3. Update an existing movie registered in the system (HTTP PUT /movies)
 4. Get details for a single movie registered in the system (HTTP GET /movies/123)
 
-[`swagger.yaml`](./swagger.yaml) sets forth the basic JSON contract that we would like the API to adhere to. If you've never used Swagger or the [Open API Spec](https://openapis.org/specification) before, go to http://editor.swagger.io/, paste in the contents of `swagger.yaml`, and it will generate some easy-to-follow documentation on the right-hand side.
-
-#### Integrating with a 3rd party
-
-At this point, you should have the RESTful endpoints above in a working state.
-
-As a consumer of this API, I would now like the movie details call (HTTP GET /movies/123) to return 3rd party ratings. These ratings will be provided by the Open Movie Database, which can be found here: https://www.omdbapi.com/
-
-For example, if `HTTP GET /movies/1` returned info about the movie "Donnie Darko", based on http://www.omdbapi.com/?t=donnie+darko&y=&plot=short&r=json, we would expect the response to look something like:
-
-```json
-{
-    "id": 1,
-    "title": "Donnie Darko",
-    "rating": 4.0,
-    "metascore": "71",
-    "imdbRating": "8.1"
-}
+# Testing
+---
+Test suites are located in ratings-api-challenge/app/test and can be executed via:
+```sh
+$ cd $APPLICATION_HOME/app/test
+$ nodetests
 ```
+[This Jenkins CI server is scheduled to run every 15 minutes.](http://54.209.200.143:8080/jenkins/)
 
-### Requirements
+Ensure you have your PYTHONPATH is set to $APPLICATION_HOME
+Set your HOST/PORT in $APPLICATION_HOME/app/config.py
+- HOST = FLASK_APP_HOST = localhost|54.209.200.143 (AWS)
+- PORT = FLASK_APP_PORT = 10702
 
-* Use any language, server, tools of your choice, but your API must be able to communicate over HTTP
-* JSON and REST are both optional but highly recommended (be prepared to explain your choice if not!)
-* Provide human-readable deployment instructions on how to deploy the application to a fresh Linux machine or a service like Heroku
-* Actually deploying to a publically-accessible endpoint is a plus!
-* To limit the scope of this challenge, authentication and authorization are both outside of scope
+To run from interpreter see below:
+
+```python
+>>> import requests
+>>> import json
+>>> HEADERS = {'content-type': 'application/json'}
+### GET
+
+>>> result = requests.get('http://HOST:PORT/movies')
+>>> result.json()
+{'Movies': [{'imdbRating': '9.0', 'metascore': '82', 'rating': 3.0, 'id': 2, 'title': 'The Dark Knight'}, {'imdbRating': '8.3', 'metascore': '70', 'rating': 4.2, 'id': 1, 'title': 'Batman Begins'}]}
+>>> result.status_code
+200
+
+### POST
+
+>>> import json
+>>> data = {"title": "Donnie Darko", "rating": 4.6}
+>>> request = requests.post('http://HOST:PORT/movies', data=json.dumps(data), headers=HEADERS)
+>>> request.status_code
+200
+>>> request.text
+'Make a new movie'
+>>> request = requests.get('http://HOST:PORT/movies?limit=1000')
+>>> request.json()
+{'Movies': [{'imdbRating': '8.1', 'metascore': '88', 'rating': 4.6, 'id': 3, 'title': 'Donnie Darko'}, {'imdbRating': '9.0', 'metascore': '82', 'rating': 3.0, 'id': 2, 'title': 'The Dark Knight'}, {'imdbRating': '8.3', 'metascore': '70', 'rating': 4.2, 'id': 1, 'title': 'Batman Begins'}]}
+
+### PUT
+
+>>> data = {"title": "Donnie Darko", "rating": 4.6}
+>>> request = requests.put('http://HOST:PORT/movies', data=json.dumps(data), headers=HEADERS)
+>>> request.status_code
+200
+>>> request.text
+'Updates the movie'
+>>> request = requests.get('http://HOST:PORT/movies?limit=1000')
+>>> request.json()
+{'Movies': [{'imdbRating': '8.1', 'metascore': '88', 'rating': 4.6, 'id': 3, 'title': 'Donnie Darko'}, {'imdbRating': '9.0', 'metascore': '82', 'rating': 3.0, 'id': 2, 'title': 'The Dark Knight'}, {'imdbRating': '8.3', 'metascore': '70', 'rating': 4.2, 'id': 1, 'title': 'Batman Begins'}]}
+### GET (by id)
+
+>>> request = requests.get('http://HOST:PORT/movies/3?limit=1000')
+>>> request.json()
+{'imdbRating': '8.1', 'metascore': '88', 'rating': 4.3, 'id': 3, 'title': 'Donnie Darko'}
+```

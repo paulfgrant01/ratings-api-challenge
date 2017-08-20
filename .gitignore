@@ -1,1 +1,3 @@
 __pycache__
+app/db/ymdb.db
+app/error.log
