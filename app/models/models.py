@@ -30,7 +30,31 @@ class Movie(BASE):
 
     # Movie id in database, integer and set to primary key
     id = Column(Integer, primary_key=True)
-    # Movie title in databse, 255 chars with inded
+    # Movie title in databse, 255 chars with index
     title = Column(String(255), index=True)
-    # Movie rating in databse, string
+    # Movie rating in databse, decorator
+    rating = Column(StringFloat)
+
+
+class Users(BASE):
+    """ Users Object for ORM """
+    # Database table name
+    __tablename__ = 'users'
+
+    # User id in database, integer and set to primary key
+    id = Column(Integer, primary_key=True)
+    # User ip in databse, 255 chars with index
+    clientip = Column(String(255), index=True)
+
+
+class Ratings(BASE):
+    """ Rating Object for ORM """
+    # Database table name
+    __tablename__ = 'ratings'
+
+    # User id in database, integer and set to primary key
+    user_id = Column(Integer, primary_key=True)
+    # Movie id in database, integer
+    movie_id = Column(Integer)
+    # Movie rating in databse, decorator
     rating = Column(StringFloat)

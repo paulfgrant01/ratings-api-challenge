@@ -28,6 +28,8 @@ def main():
 
     # Create table "movies"
     cursor.execute('CREATE TABLE IF NOT EXISTS movies(id INTEGER PRIMARY KEY, title TEXT, rating TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, clientip TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS ratings(user_id INTEGER, movie_id, rating TEXT)')
     
     # Iterate over INITIAL_DATA
     for id_ in range(len(INITIAL_DATA)):
@@ -38,6 +40,7 @@ def main():
 
         # Insert data into db
         cursor.execute("INSERT INTO movies VALUES({}, '{}', {})".format(id_ + 1, movie_name, rating))
+    #cursor.execute("INSERT INTO users VALUES({}, '{}')".format(1, '127.0.0.1')
     # Commit data
     conn.commit()
 

@@ -55,3 +55,7 @@ MOVIE_LIST_DEFAULT = 11
 MOVIE_LIST_LIMIT_ERROR = 'Number of movies to return must be between {} and {}!'
 # Movie limit request error 
 MOVIE_LIST_RATING_ERROR = 'Rating must be between 1 and 5!'
+# Movie already exists error
+MOVIE_ALREADY_EXISTS = 'Movie already exists, update via PUT!'
+# Movie does not exist exists error
+MOVIE_DOES_NOT_EXIST = 'Movie does not exist, add via POST!'

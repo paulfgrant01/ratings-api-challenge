@@ -6,8 +6,8 @@ from app.utils import Utils
 from app.constants import USER_ACCESSING_MOVIE_LIST, USER_ACCESSED_MOVIE_LIST, \
     USER_ADDING_TO_MOVIE_LIST, USER_ADDED_TO_MOVIE_LIST, USER_UPDATING_MOVIE_IN_LIST, \
     USER_UPDATED_MOVIE_IN_LIST, USER_ACCESSING_MOVIE_BY_ID, USER_ACCESSED_MOVIE_BY_ID, \
-    MOVIE_LIST_MIN, MOVIE_LIST_MAX, MOVIE_LIST_DEFAULT, \
-    MOVIE_LIST_LIMIT_ERROR, MOVIE_LIST_RATING_ERROR
+    MOVIE_LIST_MIN, MOVIE_LIST_MAX, MOVIE_LIST_DEFAULT, MOVIE_ALREADY_EXISTS, \
+    MOVIE_LIST_LIMIT_ERROR, MOVIE_LIST_RATING_ERROR, MOVIE_DOES_NOT_EXIST
 
 
 class AppObject:
@@ -49,7 +49,7 @@ class AppObject:
     # Add movie to list
     def add_movie(self, request):
         """ Add movie to list """
-        request_ip = request.remote_addr
+        clientip = request.remote_addr
         data = request.json
         # Validate json against permitted schema
         validation_error = self.utils.validate_json(data)
@@ -65,13 +65,33 @@ class AppObject:
             return self.utils.convert_error(MOVIE_LIST_RATING_ERROR), 400
 
         # Log user is attempting to add movie to list
-        self.app.logger.debug(USER_ADDING_TO_MOVIE_LIST.format(request_ip, title, rating))
+        self.app.logger.debug(USER_ADDING_TO_MOVIE_LIST.format(clientip, title, rating))
 
-        # Update movie list via self.dao
-        add_error = self.dao.add_movie(title=title, rating=rating)
-        if add_error:
-            # Convert error to return to client
-            return self.utils.convert_error(add_error), 400
+        # Get user information
+        user = self.dao.get_user(clientip=clientip)
+
+        # Check if movie exists
+        movie_exists = self.dao.get_movie_by_title(title=title)
+
+        # If the movie is already there
+        if movie_exists:
+
+            # If the user has a rating for this movie (should be a PUT), return error
+            if self.dao.get_user_rating(user_id=user['id'], movie_id=movie_exists['id']):
+                return MOVIE_ALREADY_EXISTS, 400
+            # If the user does not have rating add rating
+            else:
+                # Method will update movie rating and user rating
+                update_movie_rating(rating, user['id'], movie_exists['id'])
+        else:
+            # Add movie with rating
+            movie = self.dao.add_movie(title=title, rating=rating)
+
+            # Add user rating to rating table
+            self.dao.add_rating(
+                rating=rating,
+                user_id=user['id'],
+                movie_id=movie['id'])
 
         # Log user successfully added movie to list
         message = USER_ADDED_TO_MOVIE_LIST.format(request.remote_addr, title, rating)
@@ -83,7 +103,7 @@ class AppObject:
     # Update movie in list
     def update_movie(self, request):
         """ Update movie rating that is already in the list """
-        request_ip = request.remote_addr
+        clientip = request.remote_addr
         data = request.json
         # Validate json against permitted schema
         validation_error = self.utils.validate_json(data)
@@ -99,19 +119,26 @@ class AppObject:
             return self.utils.convert_error(MOVIE_LIST_RATING_ERROR), 400
 
         # Log user is attempting to update movie in list
-        self.app.logger.debug(USER_UPDATING_MOVIE_IN_LIST.format(request_ip, title, rating))
+        self.app.logger.debug(USER_UPDATING_MOVIE_IN_LIST.format(clientip, title, rating))
 
-        # Update movie list via self.dao
-        error = self.dao.update_movie(title=title, rating=rating)
-        if error:
+        # Get user information
+        user = self.dao.get_user(clientip=clientip)
+
+        # Check if movie exists
+        movie_exists = self.dao.get_movie_by_title(title=title)
+
+        # If the movie does not exist (should be a POST), return error
+        if not movie_exists:
             # Convert error to return to client
-            return self.utils.convert_error(error), 400
+            return MOVIE_DOES_NOT_EXIST, 400
+
+        # Method will update movie rating and user rating
+        self.update_movie_rating(rating, user['id'], movie_exists['id'])
 
         # Log user has successfully updated movie in list
-        message = USER_UPDATED_MOVIE_IN_LIST.format(request_ip, title, rating)
+        message = USER_UPDATED_MOVIE_IN_LIST.format(clientip, title, rating)
         self.app.logger.debug(message)
         self.app.logger.info(message)
-        # Return success code
         return 'Updates the movie', 200
 
     # Get movie by id
@@ -135,3 +162,18 @@ class AppObject:
         self.app.logger.info(message)
         # Return jsonified movie list with success code
         return jsonify(movie), 200
+
+    # Update the movie rating
+    def update_movie_rating(self, rating, user_id, movie_id):
+        """ Update the movie rating """
+        # Add user rating to rating table
+        self.dao.add_rating(rating=rating, user_id=user_id, movie_id=movie_id)
+
+        # Get all ratings for this movie
+        user_count, ratings_sum = self.dao.get_movie_ratings(movie_id=movie_id)
+
+        # Calculate average rating
+        average_rating = ratings_sum / user_count
+
+        # Update movie rating
+        self.dao.update_movie(id_=movie_id, rating=rating)

@@ -5,9 +5,11 @@ import json
 import requests
 from flask import Flask
 from app.config import Config
-from app.constants import MOVIE_LIST_MIN, MOVIE_LIST_MAX, OMDB_RATINGS
+from app.constants import MOVIE_LIST_MIN, MOVIE_LIST_MAX, OMDB_RATINGS, MOVIE_ALREADY_EXISTS, \
+    MOVIE_DOES_NOT_EXIST
 from app.dao import SQLITEDAO
 
+CLIENT_IP = '127.0.0.1'
 # Headers to be sent with post/put
 HEADERS = {'content-type': 'application/json'}
 # Movies required for testing
@@ -61,6 +63,13 @@ class FlaskAppTestSuite(unittest.TestCase):
             self.app.config['FLASK_APP_PORT'])
         # Get data access object
         self.db_dao = SQLITEDAO(self.app)
+
+    # Tear down after test case execution
+    def tearDown(self):
+        """ Tear down after test case execution """
+        # Delete User and their ratings
+        delete_user_and_ratings(self.db_dao)
+       
 
     def test_get_movies(self):
         """ Test successful GET on /movies """
@@ -135,17 +144,15 @@ class FlaskAppTestSuite(unittest.TestCase):
     def test_post_movies_fail_already_exists(self):
         """ Test unsuccessful POST on /movies, movie exists """
         # Add required movie first
-        add_movies([MOVIES_TO_ADD[0]], self.db_dao)
-        # Get movies from remote
         response_obj = requests.post(self.url, data=json.dumps(MOVIES_TO_ADD[0]), headers=HEADERS)
-        # Get reponse object data to variable
-        response = response_obj.json()
+        # Double post to cause failure
+        response_obj = requests.post(self.url, data=json.dumps(MOVIES_TO_ADD[0]), headers=HEADERS)
         # Delete movies that were created at the start
         delete_movies([MOVIES_TO_ADD[0]], self.db_dao)
-        # Error that should be returned
-        error = 'Movie already exists'
         # Carry out assertion
-        self.assertTrue(response['errors'][0]['detail'] == error)
+        status_code = response_obj.status_code
+        error = response_obj.text
+        self.assertTrue(error == MOVIE_ALREADY_EXISTS and status_code == 400)
 
     def test_post_movies_fail_invalid_schema(self):
         """ Test unsuccessful POST on /movies, invalid schema """
@@ -180,12 +187,10 @@ class FlaskAppTestSuite(unittest.TestCase):
         """ Test unsuccessful PUT on /movies, movie does not exist """
         # Attempt to update movie on remote
         response_obj = requests.put(self.url, data=json.dumps(UPDATE_MOVIE), headers=HEADERS)
-        # Get reponse object data to variable
-        response = response_obj.json()
-        # Error that should be returned
-        error = 'Movie does not exist'
+        error = response_obj.text
+        status_code = response_obj.status_code
         # Carry out assertion
-        self.assertTrue(response['errors'][0]['detail'] == error)
+        self.assertTrue(error == MOVIE_DOES_NOT_EXIST and status_code == 400)
 
     def test_put_movies_fail_invalid_schema(self):
         """ Test unsuccessful PUT on /movies, invalid schema """
@@ -252,6 +257,12 @@ class FlaskAppTestSuite(unittest.TestCase):
         # Carry out assertion
         self.assertTrue(set(required_ratings).issubset(set(remote_ratings)))
 
+def delete_user_and_ratings(dao):
+    """ Delete user and their ratings """
+    # Get user first
+    user = dao.get_user(clientip=CLIENT_IP)
+    if user:
+        dao.delete_user(user_id=user['id'])
 
 def add_movies(movies, dao):
     """ Add movies for testing """
