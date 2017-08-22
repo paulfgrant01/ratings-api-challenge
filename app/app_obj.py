@@ -1,7 +1,7 @@
 """ This is where the main work of routing is carried out """
 
 from flask import jsonify
-from app.dao import DAO
+from app.dao import SQLADAO
 from app.utils import Utils
 from app.constants import USER_ACCESSING_MOVIE_LIST, USER_ACCESSED_MOVIE_LIST, \
     USER_ADDING_TO_MOVIE_LIST, USER_ADDED_TO_MOVIE_LIST, USER_UPDATING_MOVIE_IN_LIST, \
@@ -15,7 +15,7 @@ class AppObject:
 
     def __init__(self, app):
         self.app = app
-        self.dao = DAO.dao_factory(app)
+        self.dao = SQLADAO.dao_factory(app)
         self.utils = Utils(self.app.config, self.app.logger)
 
     # Get movies

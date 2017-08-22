@@ -7,7 +7,7 @@ from flask import Flask
 from app.config import Config
 from app.constants import MOVIE_LIST_MIN, MOVIE_LIST_MAX, OMDB_RATINGS, MOVIE_ALREADY_EXISTS, \
     MOVIE_DOES_NOT_EXIST
-from app.dao import SQLITEDAO
+from app.dao import SQLADAO
 
 CLIENT_IP = '127.0.0.1'
 # Headers to be sent with post/put
@@ -62,7 +62,7 @@ class FlaskAppTestSuite(unittest.TestCase):
             self.app.config['FLASK_APP_HOST'],
             self.app.config['FLASK_APP_PORT'])
         # Get data access object
-        self.db_dao = SQLITEDAO(self.app)
+        self.db_dao = SQLADAO(self.app)
 
     # Tear down after test case execution
     def tearDown(self):

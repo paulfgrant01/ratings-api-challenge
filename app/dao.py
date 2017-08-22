@@ -1,12 +1,11 @@
 """ DAO for persistence """
 
+import os
 from abc import ABCMeta, abstractmethod
 from sqlalchemy import create_engine, desc, func, update
 from sqlalchemy.orm import sessionmaker
-from app.models.models import Movie, Users, Ratings
-
-# Implemented DAOS
-IMPLEMENTED_DAOS = ['SQLITE']
+from app.models.models import Movie, Users, Ratings, BASE
+from app.constants import INITIAL_DB_DATA
 
 # Interface
 class DAO(metaclass=ABCMeta):
@@ -16,15 +15,12 @@ class DAO(metaclass=ABCMeta):
     def dao_factory(app):
         type_ = app.config['DAO_TYPE']
         # Check DAO_TYPE is in IMPLEMENTED_DAOS
-        if type_ not in IMPLEMENTED_DAOS:
+        if type_ not in app.config['IMPLEMENTED_DAOS']:
             # Raise custom exception if DAO_TYPE is not implemented
             raise DAONotImplemented('Available DAOs are {}'.format(IMPLEMENTED_DAOS))
 
-        # Concat DAO_TYPE with DAO e.g. SQLITEDAO
-        dao_object = type_ + 'DAO'
-
         # Get DAO object from imported objects
-        dao = globals()[dao_object]
+        dao = globals()[app.config['DAO_TYPE']]
 
         # Return DAO object
         return dao(app)
@@ -58,7 +54,7 @@ class DAO(metaclass=ABCMeta):
     def get_user_rating(self, **kwargs): pass
 
 
-class SQLITEDAO(DAO):
+class SQLADAO(DAO):
     """ DAO for sqlite """
 
     def __init__(self, app):
@@ -69,13 +65,19 @@ class SQLITEDAO(DAO):
         # Object connection
         self.connect()
 
-
     # Connect to database
     def connect(self):
         """ DB connection """
         # Will connect to database
         self.engine = create_engine('sqlite:///' + self.db_loc)
-
+        # If db does not exist create it
+        if not os.path.exists(self.db_loc):
+            # Create all tables
+            BASE.metadata.create_all(self.engine)
+            # Insert all items in db
+            for item in INITIAL_DB_DATA:
+                self.add_movie(title=item['title'], rating=item['rating'])
+                
     # Start session with db
     def start_session(self):
         """ Start db session """

@@ -26,6 +26,9 @@ class Config: # pylint: disable=too-few-public-methods
     API_KEY = '8bdd5583'
 
     # SQLITE3 DB
-    DAO_TYPE = 'SQLITE'
+    DAO_TYPE = 'SQLADAO'
     # SQLITE3 DB Location
-    DB_LOC = BASEDIR + '/db/ymdb.db'
+    DB_LOC = BASEDIR + '/ymdb.db'
+    # Implemented DAOS
+    IMPLEMENTED_DAOS = ['SQLADAO']
+

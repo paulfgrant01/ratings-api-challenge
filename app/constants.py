@@ -59,3 +59,8 @@ MOVIE_LIST_RATING_ERROR = 'Rating must be between 1 and 5!'
 MOVIE_ALREADY_EXISTS = 'Movie already exists, update via PUT!'
 # Movie does not exist exists error
 MOVIE_DOES_NOT_EXIST = 'Movie does not exist, add via POST!'
+# Initial data to add to db
+INITIAL_DB_DATA = [
+    {'title': 'Batman Begins', 'rating': '4.2'},
+    {'title': 'The Dark Knight', 'rating': '3'},
+]
