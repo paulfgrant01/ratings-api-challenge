@@ -1,3 +1,4 @@
 __pycache__
 app/ymdb.db
 app/error.*
+app/nohup.out

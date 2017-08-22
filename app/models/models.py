@@ -1,26 +1,25 @@
 """ Movie model for ORM """
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import TypeDecorator
+from sqlalchemy.types import TypeDecorator, String
 
 # pylint: disable=abstract-method,too-few-public-methods,invalid-name
 
 # All models must extend from this
 BASE = declarative_base()
 
-# Decorator to change rating output to float
+# Decorator to change rating input/output to string/float
 class StringFloat(TypeDecorator):
-    """ Decorator to change rating output to float """
-
+    """ Decorator to change rating input/output to string/float """
     impl = String
 
-    def process_literal_param(self, value, dialect):
-        return str(float(value)) if value is not None else None
+    # Process the value on the way in to convert from float to string
+    def process_bind_param(self, value, dialect):
+        return str(float(value))
 
-    process_bind_param = process_literal_param
-
+    # Process the value on the way out to convert from string to float
     def process_result_value(self, value, dialect):
-        return float(value) if value is not None else None
+        return float(value)
 
 
 class Movie(BASE):

@@ -69,7 +69,7 @@ class SQLADAO(DAO):
     def connect(self):
         """ DB connection """
         # Will connect to database
-        self.engine = create_engine('sqlite:///' + self.db_loc)
+        self.engine = create_engine(self.db_loc)
         # If db does not exist create it
         if not os.path.exists(self.db_loc):
             # Create all tables

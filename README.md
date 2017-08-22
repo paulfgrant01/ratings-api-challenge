@@ -53,7 +53,9 @@ Test suites are located in ratings-api-challenge/app/test and can be executed vi
 $ cd $APPLICATION_HOME/app/test
 $ nodetests
 ```
-[This Jenkins CI server is scheduled to run every 15 minutes.](http://54.209.200.143:8080/jenkins/)
+[This Circle CI server is scheduled to run every update to SCM.](https://github.com/paulfgrant01/ratings-api-challenge/commits/master) (Please click Success Tick on latest commit in GitHub)
+
+[This Jenkins CI server is scheduled to run every update to SCM.](http://54.209.200.143:8080/jenkins/)
 
 Ensure you have your PYTHONPATH is set to $APPLICATION_HOME
 Set your HOST/PORT in $APPLICATION_HOME/app/config.py

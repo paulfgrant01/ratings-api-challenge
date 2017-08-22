@@ -1,3 +1,4 @@
+#!/usr/bin/python35
 """ Test suite for Flask ratings app """
 
 import unittest
@@ -9,7 +10,6 @@ from app.constants import MOVIE_LIST_MIN, MOVIE_LIST_MAX, OMDB_RATINGS, MOVIE_AL
     MOVIE_DOES_NOT_EXIST
 from app.dao import SQLADAO
 
-CLIENT_IP = '127.0.0.1'
 # Headers to be sent with post/put
 HEADERS = {'content-type': 'application/json'}
 # Movies required for testing
@@ -61,6 +61,8 @@ class FlaskAppTestSuite(unittest.TestCase):
         self.url = 'http://{}:{}/movies'.format(
             self.app.config['FLASK_APP_HOST'],
             self.app.config['FLASK_APP_PORT'])
+        # Set host to test against
+        self.clientip = self.app.config['FLASK_APP_HOST']
         # Get data access object
         self.db_dao = SQLADAO(self.app)
 
@@ -68,7 +70,7 @@ class FlaskAppTestSuite(unittest.TestCase):
     def tearDown(self):
         """ Tear down after test case execution """
         # Delete User and their ratings
-        delete_user_and_ratings(self.db_dao)
+        delete_user_and_ratings(self.db_dao, self.clientip)
        
 
     def test_get_movies(self):
@@ -257,10 +259,10 @@ class FlaskAppTestSuite(unittest.TestCase):
         # Carry out assertion
         self.assertTrue(set(required_ratings).issubset(set(remote_ratings)))
 
-def delete_user_and_ratings(dao):
+def delete_user_and_ratings(dao, clientip):
     """ Delete user and their ratings """
     # Get user first
-    user = dao.get_user(clientip=CLIENT_IP)
+    user = dao.get_user(clientip=clientip)
     if user:
         dao.delete_user(user_id=user['id'])
 
